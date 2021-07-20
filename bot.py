@@ -32,16 +32,18 @@ class Bot:
             print("please login, wait 30 seconds")
             time.sleep(30)
             self.save_cookie()
-        self.driver.get('https://www.tiktok.com/upload/?lang=en')
         time.sleep(3)
-        self.t = 60
-        self.n = 0
+        self.t = 180
+        self.n = 2
         self.generate_time()
 
         self.source = os.path.abspath("Videos/101dalmatinec/101dalmatinec.avi").replace("\\", "/")
 
-        self.tags = ["далматинцы", "рек", "rec", "мультик", "дисней", "момент", "нарезка", "101"]
-        self.description = "101 далматинец"
+        self.tags = ["далматинцы", "мультик", "дисней", "момент", "нарезка", "101", "disney", "waltdisney", "анимация", "собаки", "animation"]
+        with open("popular_tags.txt", "r") as f:
+            for i in f.read().split():
+                self.tags.append(i.replace("#", ""))
+        self.description = ""
         self.thread_name = "thread_1"
         # ================================================================
         # Here is the path of the video that you want to upload in tiktok.
@@ -76,6 +78,8 @@ class Bot:
         return True
 
     def upload(self):
+        self.driver.get('https://www.tiktok.com/upload/?lang=en')
+        time.sleep(5)
         file_uploader = self.driver.find_element_by_xpath(
             '//*[@id="main"]/div[2]/div/div[2]/div[2]/div/div/input')
 
@@ -95,9 +99,12 @@ class Bot:
         # ActionChains(self.driver).key_down(Keys.CONTROL).send_keys(
         #     'v').key_up(Keys.CONTROL).perform()
         # self.generate_tags(video.get_text(video, thread_name))
-        for tag in self.tags:
+
+        ActionChains(self.driver).send_keys(self.description).perform() # write descriprion
+        
+        for tag in random.sample(self.tags, 10): # write tags
             ActionChains(self.driver).send_keys(" #" + tag).perform()
-            time.sleep(2.5)
+            time.sleep(3)
             ActionChains(self.driver).send_keys(Keys.RETURN).perform()
             time.sleep(1)
 
@@ -105,36 +112,39 @@ class Bot:
         self.driver.execute_script("window.scrollTo(150, 300);")
         time.sleep(5)
 
-        # post = WebDriverWait(self.driver, 100).until(
-        #     EC.visibility_of_element_located(
-        #         (By.XPATH, '//*[@id="main"]/div[2]/div/div[2]/div[3]/div[6]/button[2]')))
+        post = WebDriverWait(self.driver, 100).until(
+            EC.visibility_of_element_located(
+                (By.XPATH, '//*[@id="main"]/div[2]/div/div[2]/div[3]/div[6]/button[2]')))
 
-        # post.click()
+        post.click()
         # time.sleep(30)
         while self.check_exists_by_xpath('//*[@id="main"]/div[2]/div/div[2]/div[2]/div/div[1]/div[2]'):
             pass
+        time.sleep(10)
         self.driver.find_element_by_xpath('//*[@id="main"]/div[2]/div/div[2]/div[3]/div[6]/button[2]').click()
-        print(f"{thread_name} loaded {self.source.split("/")[-1]} from {t1} to {t2}")
-        if self.check_exists_by_xpath(self.driver, '//*[@id="portal-container"]/div/div/div[1]/div[2]'):
-            reupload = WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located(
-                (By.XPATH, '//*[@id="portal-container"]/div/div/div[1]/div[2]')))
+        print(f"{self.thread_name} loaded {self.source.split('/')[-1]} from {self.t1} to {self.t2}")
+        with open("ended settings.txt", "a") as f:
+            f.write(f"{self.thread_name} loaded {self.source.split('/')[-1]} from {self.t1} to {self.t2}" + "\n")
+        # if self.check_exists_by_xpath('//*[@id="portal-container"]/div/div/div[1]/div[2]'):
+        #     reupload = WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located(
+        #         (By.XPATH, '//*[@id="portal-container"]/div/div/div[1]/div[2]')))
 
-            reupload.click()
-        else:
-            print('Unknown error cooldown')
-            while True:
-                time.sleep(600)
-                post.click()
-                time.sleep(15)
-                if self.check_exists_by_xpath(self.driver, '//*[@id="portal-container"]/div/div/div[1]/div[2]'):
-                    break
+        #     reupload.click()
+        # else:
+        #     print('Unknown error cooldown')
+        #     while True:,
+        #         time.sleep(600)
+        #         post.click()
+        #         time.sleep(15)
+        #         if self.check_exists_by_xpath('//*[@id="portal-container"]/div/div/div[1]/div[2]'):
+        #             break
 
-        if check_exists_by_xpath(self.driver, '//*[@id="portal-container"]/div/div/div[1]/div[2]'):
-            reupload = WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located(
-                (By.XPATH, '//*[@id="portal-container"]/div/div/div[1]/div[2]')))
-            reupload.click()
+        # if self.check_exists_by_xpath('//*[@id="portal-container"]/div/div/div[1]/div[2]'):
+        #     reupload = WebDriverWait(self.driver, 100).until(EC.visibility_of_element_located(
+        #         (By.XPATH, '//*[@id="portal-container"]/div/div/div[1]/div[2]')))
+        #     reupload.click()
 
-        time.sleep(1)
+        time.sleep(3)
 
 bot = Bot()
 while True:

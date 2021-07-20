@@ -1,0 +1,2 @@
+thread_1 loaded 101dalmatinec.avi from 360 to 540
+thread_1 loaded 101dalmatinec.avi from 540 to 720
